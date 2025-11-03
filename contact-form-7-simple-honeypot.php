@@ -1,30 +1,72 @@
 <?php
-/*
-  Plugin Name: Contact Form 7 Simple Integrated Honeypot
-  Requires Plugins: contact-form-7, flamingo
-  Plugin URI: https://apio.systems
-  Description: Simple Honeypot plugin for CF7 for WordPress to reduce spam on form submissions without user interaction 
-  Author: Joris Le Blansch
-  Version: 1.0.0
-  Author URI: https://apio.systems
+/**
+ * Plugin Name: Contact Form 7 Simple Honeypot
+ * Plugin URI: https://github.com/apio-sys/contact-form-7-simple-honeypot
+ * Description: Simple Honeypot plugin for CF7 to reduce spam on form submissions without user interaction. Includes honeypot field, time-based validation, and content analysis.
+ * Version: 1.0.0
+ * Author: Joris Le Blansch, Apio systems
+ * Author URI: https://apio.systems
+ * License: GPL v2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain: cf7-simple-honeypot
+ * Requires at least: 5.0
+ * Requires PHP: 7.2
+ * Requires Plugins: contact-form-7, flamingo
  */
 
-// Global variable for honeypot field name
-define('CF7_HONEYPOT_FIELD_NAME', 'your-website');
-
-// Configuration for content analysis
-define('CF7_MAX_URLS', 2); // Maximum allowed URLs in message
-define('CF7_MAX_CAPS_PERCENTAGE', 50); // Maximum percentage of uppercase characters
-define('CF7_MIN_WORDS', 3); // Minimum number of words in message
-
-// Add honeypot field to CF7 forms
-add_action('wpcf7_init', 'cf7_add_honeypot_shortcode');
-function cf7_add_honeypot_shortcode() {
-    wpcf7_add_form_tag('honeypot', 'cf7_honeypot_handler');
+// If this file is called directly, abort.
+if (!defined('WPINC')) {
+    die;
 }
 
-// Handle the honeypot shortcode
-function cf7_honeypot_handler($tag) {
+// Plugin version
+define('CF7_SIMPLE_HONEYPOT_VERSION', '1.0.0');
+
+// Configuration constants
+define('CF7_HONEYPOT_FIELD_NAME', 'your-website');
+define('CF7_MAX_URLS', 1); // Maximum allowed URLs in message
+define('CF7_MAX_CAPS_PERCENTAGE', 50); // Maximum percentage of uppercase characters
+define('CF7_MIN_WORDS', 3); // Minimum number of words in message
+define('CF7_MIN_SUBMIT_TIME', 5); // Minimum seconds before form can be submitted
+define('CF7_MAX_SUBMIT_TIME', 3600); // Maximum seconds (1 hour) before form expires
+
+/**
+ * Check if Contact Form 7 is active
+ */
+function cf7_simple_honeypot_check_cf7() {
+    if (!function_exists('wpcf7')) {
+        add_action('admin_notices', 'cf7_simple_honeypot_cf7_missing_notice');
+        deactivate_plugins(plugin_basename(__FILE__));
+        if (isset($_GET['activate'])) {
+            unset($_GET['activate']);
+        }
+    }
+}
+add_action('admin_init', 'cf7_simple_honeypot_check_cf7');
+
+/**
+ * Admin notice if Contact Form 7 is not installed
+ */
+function cf7_simple_honeypot_cf7_missing_notice() {
+    ?>
+    <div class="notice notice-error">
+        <p><?php _e('Contact Form 7 Simple Honeypot requires Contact Form 7 to be installed and activated.', 'cf7-simple-honeypot'); ?></p>
+    </div>
+    <?php
+}
+
+/**
+ * Add honeypot field to CF7 forms
+ */
+add_action('wpcf7_init', 'cf7_simple_honeypot_add_shortcode');
+function cf7_simple_honeypot_add_shortcode() {
+    wpcf7_add_form_tag('honeypot', 'cf7_simple_honeypot_handler');
+}
+
+/**
+ * Handle the honeypot shortcode
+ */
+function cf7_simple_honeypot_handler($tag) {
     $field_name = CF7_HONEYPOT_FIELD_NAME;
     
     $html = sprintf(
@@ -38,9 +80,11 @@ function cf7_honeypot_handler($tag) {
     return $html;
 }
 
-// Validate honeypot on form submission
-add_filter('wpcf7_spam', 'cf7_honeypot_validation', 10, 2);
-function cf7_honeypot_validation($spam, $submission) {
+/**
+ * Validate honeypot on form submission
+ */
+add_filter('wpcf7_spam', 'cf7_simple_honeypot_validation', 10, 2);
+function cf7_simple_honeypot_validation($spam, $submission) {
     // If already marked as spam, return early
     if ($spam) {
         return $spam;
@@ -55,20 +99,25 @@ function cf7_honeypot_validation($spam, $submission) {
         $spam = true;
         $submission->add_spam_log(array(
             'agent' => 'honeypot',
-            'reason' => 'Honeypot field was filled'
+            'reason' => __('Honeypot field was filled', 'cf7-simple-honeypot')
         ));
     }
     
     return $spam;
 }
 
-// Add time-based check (optional extra protection)
-add_action('wpcf7_init', 'cf7_add_timestamp_field');
-function cf7_add_timestamp_field() {
-    wpcf7_add_form_tag('timestamp', 'cf7_timestamp_handler');
+/**
+ * Add time-based check (optional extra protection)
+ */
+add_action('wpcf7_init', 'cf7_simple_honeypot_add_timestamp');
+function cf7_simple_honeypot_add_timestamp() {
+    wpcf7_add_form_tag('timestamp', 'cf7_simple_honeypot_timestamp_handler');
 }
 
-function cf7_timestamp_handler($tag) {
+/**
+ * Handle timestamp field
+ */
+function cf7_simple_honeypot_timestamp_handler($tag) {
     $timestamp = time();
     
     $html = sprintf(
@@ -79,9 +128,11 @@ function cf7_timestamp_handler($tag) {
     return $html;
 }
 
-// Validate timestamp (form must take at least 5 seconds to submit)
-add_filter('wpcf7_spam', 'cf7_timestamp_validation', 10, 2);
-function cf7_timestamp_validation($spam, $submission) {
+/**
+ * Validate timestamp (form must take at least X seconds to submit)
+ */
+add_filter('wpcf7_spam', 'cf7_simple_honeypot_timestamp_validation', 10, 2);
+function cf7_simple_honeypot_timestamp_validation($spam, $submission) {
     // If already marked as spam, return early
     if ($spam) {
         return $spam;
@@ -94,7 +145,7 @@ function cf7_timestamp_validation($spam, $submission) {
         $spam = true;
         $submission->add_spam_log(array(
             'agent' => 'timestamp',
-            'reason' => 'Timestamp field missing'
+            'reason' => __('Timestamp field missing', 'cf7-simple-honeypot')
         ));
         return $spam;
     }
@@ -102,22 +153,22 @@ function cf7_timestamp_validation($spam, $submission) {
     $timestamp = intval($data['cf7_timestamp']);
     $time_elapsed = time() - $timestamp;
     
-    // Form submitted too quickly (less than 5 seconds)
-    if ($time_elapsed < 5) {
+    // Form submitted too quickly
+    if ($time_elapsed < CF7_MIN_SUBMIT_TIME) {
         $spam = true;
         $submission->add_spam_log(array(
             'agent' => 'timestamp',
-            'reason' => sprintf('Form submitted too quickly (%d seconds)', $time_elapsed)
+            'reason' => sprintf(__('Form submitted too quickly (%d seconds)', 'cf7-simple-honeypot'), $time_elapsed)
         ));
         return $spam;
     }
     
-    // Form took too long (more than 1 hour - possible bot)
-    if ($time_elapsed > 3600) {
+    // Form took too long (possible bot)
+    if ($time_elapsed > CF7_MAX_SUBMIT_TIME) {
         $spam = true;
         $submission->add_spam_log(array(
             'agent' => 'timestamp',
-            'reason' => sprintf('Form session expired (%d seconds old)', $time_elapsed)
+            'reason' => sprintf(__('Form session expired (%d seconds old)', 'cf7-simple-honeypot'), $time_elapsed)
         ));
         return $spam;
     }
@@ -125,9 +176,11 @@ function cf7_timestamp_validation($spam, $submission) {
     return $spam;
 }
 
-// Content analysis spam detection
-add_filter('wpcf7_spam', 'cf7_content_analysis', 10, 2);
-function cf7_content_analysis($spam, $submission) {
+/**
+ * Content analysis spam detection
+ */
+add_filter('wpcf7_spam', 'cf7_simple_honeypot_content_analysis', 10, 2);
+function cf7_simple_honeypot_content_analysis($spam, $submission) {
     // If already marked as spam, return early
     if ($spam) {
         return $spam;
@@ -157,7 +210,7 @@ function cf7_content_analysis($spam, $submission) {
         $spam = true;
         $submission->add_spam_log(array(
             'agent' => 'content-analysis',
-            'reason' => sprintf('Too many URLs in message (%d found, max %d allowed)', $url_count, CF7_MAX_URLS)
+            'reason' => sprintf(__('Too many URLs in message (%d found, max %d allowed)', 'cf7-simple-honeypot'), $url_count, CF7_MAX_URLS)
         ));
         return $spam;
     }
@@ -172,7 +225,7 @@ function cf7_content_analysis($spam, $submission) {
             $spam = true;
             $submission->add_spam_log(array(
                 'agent' => 'content-analysis',
-                'reason' => sprintf('Excessive uppercase text (%.0f%% caps, max %d%% allowed)', $caps_percentage, CF7_MAX_CAPS_PERCENTAGE)
+                'reason' => sprintf(__('Excessive uppercase text (%.0f%% caps, max %d%% allowed)', 'cf7-simple-honeypot'), $caps_percentage, CF7_MAX_CAPS_PERCENTAGE)
             ));
             return $spam;
         }
@@ -184,7 +237,7 @@ function cf7_content_analysis($spam, $submission) {
         $spam = true;
         $submission->add_spam_log(array(
             'agent' => 'content-analysis',
-            'reason' => sprintf('Message too short (%d words, min %d required)', $word_count, CF7_MIN_WORDS)
+            'reason' => sprintf(__('Message too short (%d words, min %d required)', 'cf7-simple-honeypot'), $word_count, CF7_MIN_WORDS)
         ));
         return $spam;
     }
@@ -230,7 +283,7 @@ function cf7_content_analysis($spam, $submission) {
             $spam = true;
             $submission->add_spam_log(array(
                 'agent' => 'content-analysis',
-                'reason' => sprintf('Spam keyword detected: "%s"', $keyword)
+                'reason' => sprintf(__('Spam keyword detected: "%s"', 'cf7-simple-honeypot'), $keyword)
             ));
             return $spam;
         }
@@ -241,7 +294,7 @@ function cf7_content_analysis($spam, $submission) {
         $spam = true;
         $submission->add_spam_log(array(
             'agent' => 'content-analysis',
-            'reason' => 'Repetitive text pattern detected'
+            'reason' => __('Repetitive text pattern detected', 'cf7-simple-honeypot')
         ));
         return $spam;
     }
@@ -255,7 +308,7 @@ function cf7_content_analysis($spam, $submission) {
             $spam = true;
             $submission->add_spam_log(array(
                 'agent' => 'content-analysis',
-                'reason' => sprintf('Excessive special characters (%.0f%% of message)', $special_char_percentage)
+                'reason' => sprintf(__('Excessive special characters (%.0f%% of message)', 'cf7-simple-honeypot'), $special_char_percentage)
             ));
             return $spam;
         }
@@ -264,9 +317,11 @@ function cf7_content_analysis($spam, $submission) {
     return $spam;
 }
 
-// Add custom CSS to ensure honeypot is completely hidden
-add_action('wp_head', 'cf7_honeypot_css');
-function cf7_honeypot_css() {
+/**
+ * Add custom CSS to ensure honeypot is completely hidden
+ */
+add_action('wp_head', 'cf7_simple_honeypot_css');
+function cf7_simple_honeypot_css() {
     $field_name = CF7_HONEYPOT_FIELD_NAME;
     echo '<style>
         .wpcf7-form-control-wrap[data-name="' . esc_attr($field_name) . '"] {
