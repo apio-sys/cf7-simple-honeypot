@@ -58,7 +58,7 @@ add_action('admin_init', 'cf7_simple_honeypot_check_cf7');
 function cf7_simple_honeypot_cf7_missing_notice() {
     ?>
     <div class="notice notice-error">
-        <p><?php _e('Contact Form 7 Simple Honeypot requires Contact Form 7 to be installed and activated.', 'cf7-simple-honeypot'); ?></p>
+        <p><?php esc_html_e('Contact Form 7 Simple Honeypot requires Contact Form 7 to be installed and activated.', 'cf7-simple-honeypot'); ?></p>
     </div>
     <?php
 }
@@ -113,11 +113,11 @@ function cf7_simple_honeypot_settings_page() {
     <div class="wrap">
         <h1><?php echo esc_html(get_admin_page_title()); ?></h1>
         <div class="notice notice-info">
-            <h3><?php _e('How to Use', 'cf7-simple-honeypot'); ?></h3>
-            <p><?php _e('Add the following shortcodes to your Contact Form 7 forms:', 'cf7-simple-honeypot'); ?></p>
-            <p><code>[honeypot]</code> - <?php _e('Adds the hidden honeypot field', 'cf7-simple-honeypot'); ?></p>
-            <p><code>[timestamp]</code> - <?php _e('Adds time-based validation', 'cf7-simple-honeypot'); ?></p>
-            <p><strong><?php _e('Example form:', 'cf7-simple-honeypot'); ?></strong></p>
+            <h3><?php esc_html_e('How to Use', 'cf7-simple-honeypot'); ?></h3>
+            <p><?php esc_html_e('Add the following shortcodes to your Contact Form 7 forms:', 'cf7-simple-honeypot'); ?></p>
+            <p><code>[honeypot]</code> - <?php esc_html_e('Adds the hidden honeypot field', 'cf7-simple-honeypot'); ?></p>
+            <p><code>[timestamp]</code> - <?php esc_html_e('Adds time-based validation', 'cf7-simple-honeypot'); ?></p>
+            <p><strong><?php esc_html_e('Example form:', 'cf7-simple-honeypot'); ?></strong></p>
             <pre style="background: #f5f5f5; padding: 10px; border: 1px solid #ddd;">
 &lt;label&gt; Your Name
     [text* your-name] &lt;/label&gt;
@@ -137,84 +137,84 @@ function cf7_simple_honeypot_settings_page() {
             <?php settings_fields('cf7_simple_honeypot_settings'); ?>
             <table class="form-table">
                 <tr>
-                    <th colspan="2"><h2><?php _e('Honeypot Settings', 'cf7-simple-honeypot'); ?></h2></th>
+                    <th colspan="2"><h2><?php esc_html_e('Honeypot Settings', 'cf7-simple-honeypot'); ?></h2></th>
                 </tr>
                 <tr>
                     <th scope="row">
-                        <label for="honeypot_field_name"><?php _e('Honeypot Field Name', 'cf7-simple-honeypot'); ?></label>
+                        <label for="honeypot_field_name"><?php esc_html_e('Honeypot Field Name', 'cf7-simple-honeypot'); ?></label>
                     </th>
                     <td>
                         <input type="text" id="honeypot_field_name" name="cf7_simple_honeypot_settings[honeypot_field_name]" value="<?php echo esc_attr($options['honeypot_field_name']); ?>" class="regular-text" />
-                        <p class="description"><?php _e('The name of the hidden field. Use CF7-style names (e.g., your-website, your-company)', 'cf7-simple-honeypot'); ?></p>
+                        <p class="description"><?php esc_html_e('The name of the hidden field. Use CF7-style names (e.g., your-website, your-company)', 'cf7-simple-honeypot'); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th colspan="2"><h2><?php _e('Time-Based Validation', 'cf7-simple-honeypot'); ?></h2></th>
+                    <th colspan="2"><h2><?php esc_html_e('Time-Based Validation', 'cf7-simple-honeypot'); ?></h2></th>
                 </tr>
                 <tr>
                     <th scope="row">
-                        <label for="min_submit_time"><?php _e('Minimum Submit Time (seconds)', 'cf7-simple-honeypot'); ?></label>
+                        <label for="min_submit_time"><?php esc_html_e('Minimum Submit Time (seconds)', 'cf7-simple-honeypot'); ?></label>
                     </th>
                     <td>
                         <input type="number" id="min_submit_time" name="cf7_simple_honeypot_settings[min_submit_time]" value="<?php echo esc_attr($options['min_submit_time']); ?>" min="1" max="60" class="small-text" />
-                        <p class="description"><?php _e('Forms submitted faster than this will be marked as spam (recommended: 3-5 seconds)', 'cf7-simple-honeypot'); ?></p>
+                        <p class="description"><?php esc_html_e('Forms submitted faster than this will be marked as spam (recommended: 3-5 seconds)', 'cf7-simple-honeypot'); ?></p>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">
-                        <label for="max_submit_time"><?php _e('Maximum Submit Time (seconds)', 'cf7-simple-honeypot'); ?></label>
+                        <label for="max_submit_time"><?php esc_html_e('Maximum Submit Time (seconds)', 'cf7-simple-honeypot'); ?></label>
                     </th>
                     <td>
                         <input type="number" id="max_submit_time" name="cf7_simple_honeypot_settings[max_submit_time]" value="<?php echo esc_attr($options['max_submit_time']); ?>" min="300" max="7200" class="small-text" />
-                        <p class="description"><?php _e('Forms older than this will be marked as spam (recommended: 3600 = 1 hour)', 'cf7-simple-honeypot'); ?></p>
+                        <p class="description"><?php esc_html_e('Forms older than this will be marked as spam (recommended: 3600 = 1 hour)', 'cf7-simple-honeypot'); ?></p>
                     </td>
                 </tr>
                 <tr>
-                    <th colspan="2"><h2><?php _e('Content Analysis Settings', 'cf7-simple-honeypot'); ?></h2></th>
+                    <th colspan="2"><h2><?php esc_html_e('Content Analysis Settings', 'cf7-simple-honeypot'); ?></h2></th>
                 </tr>
                 <tr>
                     <th scope="row">
-                        <label for="message_field_names"><?php _e('Message Field Names', 'cf7-simple-honeypot'); ?></label>
+                        <label for="message_field_names"><?php esc_html_e('Message Field Names', 'cf7-simple-honeypot'); ?></label>
                     </th>
                     <td>
                         <textarea id="message_field_names" name="cf7_simple_honeypot_settings[message_field_names]" rows="4" class="large-text"><?php echo esc_textarea($options['message_field_names']); ?></textarea>
-                        <p class="description"><?php _e('One field name per line. These are the fields that will be analyzed for spam content.', 'cf7-simple-honeypot'); ?></p>
+                        <p class="description"><?php esc_html_e('One field name per line. These are the fields that will be analyzed for spam content.', 'cf7-simple-honeypot'); ?></p>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">
-                        <label for="max_urls"><?php _e('Maximum URLs Allowed', 'cf7-simple-honeypot'); ?></label>
+                        <label for="max_urls"><?php esc_html_e('Maximum URLs Allowed', 'cf7-simple-honeypot'); ?></label>
                     </th>
                     <td>
                         <input type="number" id="max_urls" name="cf7_simple_honeypot_settings[max_urls]" value="<?php echo esc_attr($options['max_urls']); ?>" min="0" max="10" class="small-text" />
-                        <p class="description"><?php _e('Messages with more URLs than this will be marked as spam', 'cf7-simple-honeypot'); ?></p>
+                        <p class="description"><?php esc_html_e('Messages with more URLs than this will be marked as spam', 'cf7-simple-honeypot'); ?></p>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">
-                        <label for="max_caps_percentage"><?php _e('Maximum Uppercase Percentage', 'cf7-simple-honeypot'); ?></label>
+                        <label for="max_caps_percentage"><?php esc_html_e('Maximum Uppercase Percentage', 'cf7-simple-honeypot'); ?></label>
                     </th>
                     <td>
                         <input type="number" id="max_caps_percentage" name="cf7_simple_honeypot_settings[max_caps_percentage]" value="<?php echo esc_attr($options['max_caps_percentage']); ?>" min="0" max="100" class="small-text" />%
-                        <p class="description"><?php _e('Messages with more uppercase letters than this percentage will be marked as spam', 'cf7-simple-honeypot'); ?></p>
+                        <p class="description"><?php esc_html_e('Messages with more uppercase letters than this percentage will be marked as spam', 'cf7-simple-honeypot'); ?></p>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">
-                        <label for="min_words"><?php _e('Minimum Word Count', 'cf7-simple-honeypot'); ?></label>
+                        <label for="min_words"><?php esc_html_e('Minimum Word Count', 'cf7-simple-honeypot'); ?></label>
                     </th>
                     <td>
                         <input type="number" id="min_words" name="cf7_simple_honeypot_settings[min_words]" value="<?php echo esc_attr($options['min_words']); ?>" min="1" max="20" class="small-text" />
-                        <p class="description"><?php _e('Messages with fewer words than this will be marked as spam', 'cf7-simple-honeypot'); ?></p>
+                        <p class="description"><?php esc_html_e('Messages with fewer words than this will be marked as spam', 'cf7-simple-honeypot'); ?></p>
                     </td>
                 </tr>
                 <tr>
                     <th scope="row">
-                        <label for="spam_keywords"><?php _e('Spam Keywords', 'cf7-simple-honeypot'); ?></label>
+                        <label for="spam_keywords"><?php esc_html_e('Spam Keywords', 'cf7-simple-honeypot'); ?></label>
                     </th>
                     <td>
                         <textarea id="spam_keywords" name="cf7_simple_honeypot_settings[spam_keywords]" rows="15" class="large-text code"><?php echo esc_textarea($options['spam_keywords']); ?></textarea>
-                        <p class="description"><?php _e('One keyword or phrase per line. Messages containing any of these will be marked as spam. Case-insensitive.', 'cf7-simple-honeypot'); ?></p>
+                        <p class="description"><?php esc_html_e('One keyword or phrase per line. Messages containing any of these will be marked as spam. Case-insensitive.', 'cf7-simple-honeypot'); ?></p>
                     </td>
                 </tr>
             </table>
