@@ -8,7 +8,7 @@ I like to use Contact Form 7 on most of my WordPress sites. It's a powerful form
 - Activate the plugin through the "Plugins" menu in WordPress, you MUST have Contact Form 7 AND Flamingo installed and enabled.
 - Add the following shortcodes to your Contact Form 7 forms:
 
-`[honeypot]` - Adds the hidden honeypot field
+`[honeypot]` - Adds the hidden honeypot field\
 `[timestamp]` - Adds time-based validation
 
 Example form:
@@ -23,13 +23,13 @@ Example form:
 <label> Your Message
     [textarea your-message] </label>
 
-__[honeypot]__
-__[timestamp]__
+[honeypot]
+[timestamp]
 
 [submit "Send"]
 ```
 
-- Complete the rest of the options (a default generally good working set of values is enabled by default).
+- Complete the rest of the options (a generally good working set of values is enabled by default).
 
 ## What tests are used?
 
