@@ -304,9 +304,9 @@ function cf7_simple_honeypot_timestamp_validation($spam, $submission) {
     // Form submitted too quickly
     if ($time_elapsed < $min_time) {
         $spam = true;
-        /* translators: %d: number of seconds elapsed */
         $submission->add_spam_log(array(
             'agent' => 'timestamp',
+	    /* translators: %d: number of seconds elapsed */
             'reason' => sprintf(__('Form submitted too quickly (%d seconds)', 'cf7-simple-honeypot'), $time_elapsed)
         ));
         return $spam;
