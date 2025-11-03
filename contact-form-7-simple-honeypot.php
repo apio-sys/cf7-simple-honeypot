@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Contact Form 7 Simple Honeypot
  * Plugin URI: https://github.com/apio-sys/contact-form-7-simple-honeypot
- * Description: Simple Honeypot plugin for CF7 to reduce spam on form submissions without user interaction. Includes honeypot field, time-based validation, and content analysis.
+ * Description: Simple Honeypot plugin for CF7 to reduce spam on form submissions without user interaction. Includes honeypot field, time-based validation, and content analysis. Store results in Flamingo.
  * Version: 0.9.0
  * Author: Joris Le Blansch
  * Author URI: https://apio.systems
