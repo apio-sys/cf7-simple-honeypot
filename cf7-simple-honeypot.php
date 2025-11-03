@@ -77,38 +77,22 @@ function cf7_simple_honeypot_add_admin_menu() {
 }
 
 // Link to settings from plugin list
-add_filter( 'plugin_action_links_' . plugin_basename(__FILE__), 'cf7_simple_honeypot_settings_link' );
-function cf7_simple_honeypot_settings_link( array $links ) {
+add_filter( 'plugin_action_links_' . plugin_basename(__FILE__), 'apd_settings_link' );
+function apd_settings_link( array $links ) {
     $url = get_admin_url() . "admin.php?page=cf7-simple-honeypot";
-    $settings_link = '<a href="' . esc_url($url) . '">' . __('Settings', 'cf7-simple-honeypot') . '</a>';
-    $links[] = $settings_link;
+    $settings_link = '<a href="' . $url . '">' . __('Settings', 'cf7-simple-honeypot') . '</a>';
+      $links[] = $settings_link;
     return $links;
 }
 
 // Register settings
 add_action('admin_init', 'cf7_simple_honeypot_register_settings');
 function cf7_simple_honeypot_register_settings() {
-    register_setting(
-        'cf7_simple_honeypot_settings',
-        'cf7_simple_honeypot_settings',
-        array(
-            'sanitize_callback' => 'cf7_simple_honeypot_sanitize_settings'
-        )
-    );
+    register_setting('cf7_simple_honeypot_settings', 'cf7_simple_honeypot_settings', 'cf7_simple_honeypot_sanitize_settings');
 }
 
 // Sanitize settings
 function cf7_simple_honeypot_sanitize_settings($input) {
-    // Verify nonce
-    if (!isset($_POST['cf7_simple_honeypot_nonce']) || !wp_verify_nonce($_POST['cf7_simple_honeypot_nonce'], 'cf7_simple_honeypot_save_settings')) {
-        add_settings_error(
-            'cf7_simple_honeypot_settings',
-            'nonce_failed',
-            __('Security verification failed. Please try again.', 'cf7-simple-honeypot'),
-            'error'
-        );
-        return get_option('cf7_simple_honeypot_settings', cf7_simple_honeypot_default_settings());
-    }
     $sanitized = array();
     $sanitized['honeypot_field_name'] = sanitize_text_field($input['honeypot_field_name']);
     $sanitized['max_urls'] = absint($input['max_urls']);
@@ -150,10 +134,7 @@ function cf7_simple_honeypot_settings_page() {
 [submit "Send"]</pre>
         </div>
         <form method="post" action="options.php">
-            <?php
-            settings_fields('cf7_simple_honeypot_settings');
-            wp_nonce_field('cf7_simple_honeypot_save_settings', 'cf7_simple_honeypot_nonce');
-            ?>
+            <?php settings_fields('cf7_simple_honeypot_settings'); ?>
             <table class="form-table">
                 <tr>
                     <th colspan="2"><h2><?php esc_html_e('Honeypot Settings', 'cf7-simple-honeypot'); ?></h2></th>
@@ -323,9 +304,9 @@ function cf7_simple_honeypot_timestamp_validation($spam, $submission) {
     // Form submitted too quickly
     if ($time_elapsed < $min_time) {
         $spam = true;
-        /* translators: %d: number of seconds elapsed */
         $submission->add_spam_log(array(
             'agent' => 'timestamp',
+	    /* translators: %d: number of seconds elapsed */
             'reason' => sprintf(__('Form submitted too quickly (%d seconds)', 'cf7-simple-honeypot'), $time_elapsed)
         ));
         return $spam;
@@ -333,9 +314,9 @@ function cf7_simple_honeypot_timestamp_validation($spam, $submission) {
     // Form took too long
     if ($time_elapsed > $max_time) {
         $spam = true;
-        /* translators: %d: number of seconds the form was open */
         $submission->add_spam_log(array(
             'agent' => 'timestamp',
+            /* translators: %d: number of seconds the form was open */
             'reason' => sprintf(__('Form session expired (%d seconds old)', 'cf7-simple-honeypot'), $time_elapsed)
         ));
         return $spam;
@@ -370,9 +351,9 @@ function cf7_simple_honeypot_content_analysis($spam, $submission) {
     $url_count = preg_match_all('/https?:\/\/[^\s]+/i', $message);
     if ($url_count > $max_urls) {
         $spam = true;
-        /* translators: 1: number of URLs found, 2: maximum number allowed */
         $submission->add_spam_log(array(
             'agent' => 'content-analysis',
+            /* translators: 1: number of URLs found, 2: maximum number allowed */
             'reason' => sprintf(__('Too many URLs in message (%1$d found, max %2$d allowed)', 'cf7-simple-honeypot'), $url_count, $max_urls)
         ));
         return $spam;
@@ -385,9 +366,9 @@ function cf7_simple_honeypot_content_analysis($spam, $submission) {
         $caps_percentage = ($uppercase_count / strlen($letters_only)) * 100;
         if ($caps_percentage > $max_caps) {
             $spam = true;
-            /* translators: 1: percentage of uppercase characters, 2: maximum percentage allowed */
             $submission->add_spam_log(array(
                 'agent' => 'content-analysis',
+                /* translators: 1: percentage of uppercase characters, 2: maximum percentage allowed */
                 'reason' => sprintf(__('Excessive uppercase text (%1$.0f%% caps, max %2$d%% allowed)', 'cf7-simple-honeypot'), $caps_percentage, $max_caps)
             ));
             return $spam;
@@ -398,9 +379,9 @@ function cf7_simple_honeypot_content_analysis($spam, $submission) {
     $word_count = str_word_count($message);
     if ($word_count < $min_words) {
         $spam = true;
-        /* translators: 1: number of words in message, 2: minimum number required */
         $submission->add_spam_log(array(
             'agent' => 'content-analysis',
+            /* translators: 1: number of words in message, 2: minimum number required */
             'reason' => sprintf(__('Message too short (%1$d words, min %2$d required)', 'cf7-simple-honeypot'), $word_count, $min_words)
         ));
         return $spam;
@@ -412,9 +393,9 @@ function cf7_simple_honeypot_content_analysis($spam, $submission) {
     foreach ($spam_keywords as $keyword) {
         if (strpos($message_lower, strtolower($keyword)) !== false) {
             $spam = true;
-            /* translators: %s: the spam keyword that was detected */
             $submission->add_spam_log(array(
                 'agent' => 'content-analysis',
+                /* translators: %s: the spam keyword that was detected */
                 'reason' => sprintf(__('Spam keyword detected: "%s"', 'cf7-simple-honeypot'), $keyword)
             ));
             return $spam;
@@ -436,9 +417,9 @@ function cf7_simple_honeypot_content_analysis($spam, $submission) {
         $special_char_percentage = ($special_char_count / $total_chars) * 100;
         if ($special_char_percentage > 30) {
             $spam = true;
-            /* translators: %s: percentage of special characters in the message */
             $submission->add_spam_log(array(
                 'agent' => 'content-analysis',
+                /* translators: %s: percentage of special characters in the message */
                 'reason' => sprintf(__('Excessive special characters (%.0f%% of message)', 'cf7-simple-honeypot'), $special_char_percentage)
             ));
             return $spam;
