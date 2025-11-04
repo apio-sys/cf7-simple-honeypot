@@ -11,7 +11,7 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
     exit;
 }
 
-$option_name = 'cf7_simple_honeypot_settings';
+$option_name = 'cf7_basic_honeypot_settings';
 
 // Delete plugin options
 delete_option( $option_name );
