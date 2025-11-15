@@ -36,3 +36,7 @@ Example form:
 - A Honeypot Field
 - Time-Based Validation
 - Basic Content Analysis
+
+## Does it really work?
+
+It has been tested on several high-traffic WP sites. I see a return of ~ 1 ‰ (i.e. 1 in a thousand) of spam going through. That usually corresponds to humans paid to fill forms or sophisticated bots. Please feel free to contribute to make it even better.
