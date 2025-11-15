@@ -11,12 +11,12 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
     exit;
 }
 
-$option_name = 'apiosys_honeypot_cf7_settings';
+$apiosys_honeypot_option_name = 'apiosys_honeypot_cf7_settings';
 
 // Delete plugin options
-delete_option( $option_name );
+delete_option( $apiosys_honeypot_option_name );
 
 // for site options in Multisite installations
 if (is_multisite()) {
-    delete_site_option( $option_name );
+    delete_site_option( $apiosys_honeypot_option_name );
 }
