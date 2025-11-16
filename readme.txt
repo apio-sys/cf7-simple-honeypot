@@ -31,6 +31,10 @@ I like to use Contact Form 7 on most of my WordPress sites. It's a powerful form
 - Time-Based Validation
 - Basic Content Analysis
 
+== Does it really work? ==
+
+It has been tested on several high-traffic WP sites. I see a return of ~ 1 ‰ (i.e. 1 in a thousand) of spam going through. That usually corresponds to humans paid to fill forms or sophisticated bots. Please feel free to contribute to make it even better.
+
 == Changelog ==
 = 0.9.3 - 2025-11-16 =
 * FIX: CSS resource version.
