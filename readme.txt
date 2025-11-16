@@ -23,7 +23,7 @@ I like to use Contact Form 7 on most of my WordPress sites. It's a powerful form
 [honeypot] - Adds the hidden honeypot field\
 [timestamp] - Adds time-based validation
 
-- Complete the rest of the options (a generally good working set of values is enabled by default).
+- Complete the rest of the options which you can find in Admin > Contact > Honeypot. A generally good working set of values is enabled by default there.
 
 == What tests are used? ==
 
