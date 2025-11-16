@@ -29,7 +29,7 @@ Example form:
 [submit "Send"]
 ```
 
-- Complete the rest of the options (a generally good working set of values is enabled by default).
+- Complete the rest of the options which you can find in Admin > Contact > Honeypot. A generally good working set of values is enabled by default there.
 
 ## What tests are used?
 
