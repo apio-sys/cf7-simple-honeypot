@@ -16,7 +16,7 @@ I like to use Contact Form 7 on most of my WordPress sites. It's a powerful form
 
 == Setup ==
 
-- Install the plugin using the regular plugin setup routine or upload the entire cf7-basic-honeypot folder to the /wp-content/plugins/ directory.
+- Install the plugin using the regular plugin setup routine or upload the entire apiosys-honeypot-cf7 folder to the /wp-content/plugins/ directory.
 - Activate the plugin through the "Plugins" menu in WordPress, you MUST have Contact Form 7 AND Flamingo installed and enabled.
 - Add the following shortcodes to your Contact Form 7 forms:
 
